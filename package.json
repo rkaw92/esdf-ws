@@ -1,0 +1,17 @@
+{
+  "name": "esdf-ws",
+  "version": "0.1.0",
+  "description": "WebSocket pass-through for esdf",
+  "main": "master.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bufferutil": "^1.2.1",
+    "uuid": "^2.0.1",
+    "when": "^3.7.7",
+    "ws": "^1.0.1"
+  }
+}
