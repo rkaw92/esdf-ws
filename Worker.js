@@ -32,6 +32,16 @@ class Worker extends EventEmitter {
 			self.isEnabled = true;
 		});
 		
+		self._dataChannel.on('error', function() {
+			self.isEnabled = false;
+			self.emit('error');
+		});
+		
+		self._dataChannel.on('close', function() {
+			self.isEnabled = false;
+			self.emit('close');
+		});
+		
 		var rl = readline.createInterface({ input: self._dataChannel, terminal: false, historySize: 0 });
 		rl.on('line', function(line) {
 			var inboundMessage = WorkerProtocol.decode(line);
