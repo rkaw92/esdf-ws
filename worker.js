@@ -13,7 +13,11 @@ var dataReader = readline.createInterface({ input: dataChannel, terminal: false,
 dataReader.on('line', function(line) {
 	messageCount += 1;
 	var inboundMessage = WorkerProtocol.decode(line);
-	dataChannel.write(WorkerProtocol.encode({ metadata: inboundMessage.metadata, data: 'reply' }));
+	var request = JSON.parse(inboundMessage.data);
+	var response = { jsonrpc: '2.0', id: request.id, result: { date: (new Date()).toISOString() } };
+	setTimeout(function() {
+		dataChannel.write(WorkerProtocol.encode({ metadata: inboundMessage.metadata, data: JSON.stringify(response) }));
+	}, 1000);
 });
 
 process.on('message', function(message) {
