@@ -1,10 +1,9 @@
 var ws = require('ws');
 var http = require('http');
 var uuid = require('uuid');
-var childProcess = require('child_process');
 var nodefn = require('when/node');
 
-var WorkerManager = require('./WorkerManager');
+var WorkerManager = require('./lib/WorkerManager');
 
 // ### Server bindings ###
 var webServer = http.createServer();
@@ -23,11 +22,13 @@ var clients = new Map();
 var workers = new WorkerManager({
 	workerScript: __dirname + '/worker.js',
 	init: function(worker) {
-		worker.on('controlMessage', function(message) {
+		worker.controlChannel.on('message', function(message) {
 			console.log('---> Worker:', message);
 		});
 		
-		worker.on('message', function(metadata, data) {
+		worker.on('message', function(message) {
+			var metadata = message.metadata;
+			var data = message.data;
 			if (metadata.clientID) {
 				var destinationClient = clients.get(metadata.clientID);
 				// Drop unroutable messages.
@@ -53,8 +54,7 @@ websocketServer.on('connection', function(socketClient) {
 		//console.log('---> Message from %s, forwarding...', clientID);
 		var worker = workers.getWorker();
 		if (worker) {
-// 			worker.send({ clientID: clientID, data: data });
-			worker.send({ clientID }, data);
+			worker.send({ metadata: { clientID }, data: data });
 			writtenCount += 1;
 		}
 		else {
